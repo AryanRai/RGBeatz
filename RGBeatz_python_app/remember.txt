@@ -1,0 +1,11 @@
+py -3.7 -m pip install packagename
+
+
+
+pip install pywin32
+pip install eel
+pip install numpy
+pip install spotipy
+pip install aiohttp
+pip install asyncio
+pip install cryptography

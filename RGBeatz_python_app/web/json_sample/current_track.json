@@ -1,0 +1,127 @@
+{
+  "device": {
+    "id": "4edf8cd20c3fd64e5ddd9fd281425a219295bd6a",
+    "is_active": true,
+    "is_private_session": false,
+    "is_restricted": false,
+    "name": "Pixel 5 kinda",
+    "type": "Tablet",
+    "volume_percent": 100
+  },
+  "shuffle_state": true,
+  "repeat_state": "off",
+  "timestamp": 1618678920519,
+  "context": {
+    "external_urls": {
+      "spotify": "https://open.spotify.com/playlist/0N3F0ZNJrkeB8VrTRTrsDf"
+    },
+    "href": "https://api.spotify.com/v1/playlists/0N3F0ZNJrkeB8VrTRTrsDf",
+    "type": "playlist",
+    "uri": "spotify:playlist:0N3F0ZNJrkeB8VrTRTrsDf"
+  },
+  "progress_ms": 3967,
+  "item": {
+    "album": {
+      "album_type": "album",
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/5Rl15oVamLq7FbSb0NNBNy"
+          },
+          "href": "https://api.spotify.com/v1/artists/5Rl15oVamLq7FbSb0NNBNy",
+          "id": "5Rl15oVamLq7FbSb0NNBNy",
+          "name": "5 Seconds of Summer",
+          "type": "artist",
+          "uri": "spotify:artist:5Rl15oVamLq7FbSb0NNBNy"
+        },
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW"
+          },
+          "href": "https://api.spotify.com/v1/artists/6Ad91Jof8Niiw0lGLLi3NW",
+          "id": "6Ad91Jof8Niiw0lGLLi3NW",
+          "name": "YUNGBLUD",
+          "type": "artist",
+          "uri": "spotify:artist:6Ad91Jof8Niiw0lGLLi3NW"
+        },
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/6sFHvCyqklnJpXC9Nh1aag"
+          },
+          "href": "https://api.spotify.com/v1/artists/6sFHvCyqklnJpXC9Nh1aag",
+          "id": "6sFHvCyqklnJpXC9Nh1aag",
+          "name": "Alexander 23",
+          "type": "artist",
+          "uri": "spotify:artist:6sFHvCyqklnJpXC9Nh1aag"
+        }
+      ],
+      "external_urls": {
+        "spotify": "https://open.spotify.com/album/1zbH0DnpYxaoqTojXNLQb6"
+      },
+      "href": "https://api.spotify.com/v1/albums/1zbH0DnpYxaoqTojXNLQb6",
+      "id": "1zbH0DnpYxaoqTojXNLQb6",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b27369097de66c421c70ca086d42",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e0269097de66c421c70ca086d42",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d0000485169097de66c421c70ca086d42",
+          "width": 64
+        }
+      ],
+      "name": "13 Reasons Why (Season 3)",
+      "release_date": "2019-08-23",
+      "release_date_precision": "day",
+      "total_tracks": 18,
+      "type": "album",
+      "uri": "spotify:album:1zbH0DnpYxaoqTojXNLQb6"
+    },
+    "artists": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/0pCNk4D3E2xtszsm6hMsWr"
+        },
+        "href": "https://api.spotify.com/v1/artists/0pCNk4D3E2xtszsm6hMsWr",
+        "id": "0pCNk4D3E2xtszsm6hMsWr",
+        "name": "K.Flay",
+        "type": "artist",
+        "uri": "spotify:artist:0pCNk4D3E2xtszsm6hMsWr"
+      }
+    ],
+    "disc_number": 1,
+    "duration_ms": 184133,
+    "explicit": true,
+    "external_ids": {
+      "isrc": "USUM71902993"
+    },
+    "external_urls": {
+      "spotify": "https://open.spotify.com/track/2K6BbXPV4sePRTdyhtc80k"
+    },
+    "href": "https://api.spotify.com/v1/tracks/2K6BbXPV4sePRTdyhtc80k",
+    "id": "2K6BbXPV4sePRTdyhtc80k",
+    "is_local": false,
+    "is_playable": true,
+    "name": "This Baby Don’t Cry",
+    "popularity": 38,
+    "preview_url": null,
+    "track_number": 12,
+    "type": "track",
+    "uri": "spotify:track:2K6BbXPV4sePRTdyhtc80k"
+  },
+  "currently_playing_type": "track",
+  "actions": {
+    "disallows": {
+      "resuming": true,
+      "skipping_prev": true
+    }
+  },
+  "is_playing": true
+}
