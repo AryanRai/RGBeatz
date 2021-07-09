@@ -13,6 +13,7 @@
   </div>
 </div>
 
+
 <style type="text/css">
 
 @charset "UTF-8";
@@ -168,7 +169,10 @@ div, ::before, ::after {
 var loadingani = document.getElementById('load');
 setTimeout(function(){ 
 	loadingani.style.visibility = "hidden";
-    loadingani.style.display = "none"; 
+  loadingani.style.display = "none";
+  window.location.replace('http://' + hostname + ':' + window.location.port + 'create_new_device/blynkid_form.html'); 
+
+
 }, 3000);
 
 

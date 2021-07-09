@@ -26,7 +26,7 @@ try     :
     wndw_title  = win32gui.GetWindowText(frgrnd_wndw);
     if wndw_title.endswith("py.exe"):
         win32gui.ShowWindow(frgrnd_wndw, win32con.SW_HIDE);
-    #endif
+
 except  :
     pass
 
@@ -574,7 +574,7 @@ while True:
     eel.sleep(0.001)
     
 
-
+k=input("press close to exit") 
 
 
 
