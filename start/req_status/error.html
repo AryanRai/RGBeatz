@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>error</title>
+  <link rel="stylesheet" href="./error.css">
+
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+
+  
+  <div id="error-box">
+    <div class="dot" onclick="close_window()"></div>
+    <div class="face2">
+      <div class="eye"></div>
+      <div class="eye right"></div>
+      <div class="mouth sad"></div>
+    </div>
+    <div class="shadow move"></div>
+    <div class="message"><h1 class="alert">Error!</h1><p>oh no, something went wrong.</div>
+    <button class="button-box" onclick="tryagain()"><h1 class="red">try again</h1></button>
+  </div>
+
+<script type="text/javascript">
+  
+  function close_window() {
+    window.close();
+  }
+
+
+  function tryagain() {
+    
+      var hostname = 'localhost';
+const hash = window.location.hash
+.substring(1)
+.split('&')
+.reduce(function (initial, item) {
+  if (item) {
+    var parts = item.split('=');
+    initial[parts[0]] = decodeURIComponent(parts[1]);
+  }
+  return initial;
+}, {});
+window.location.hash = '';
+
+// Set token
+let _token = hash.access_token;
+  
+const authEndpoint = 'https://accounts.spotify.com/authorize';
+
+const clientId = atob('NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=');
+const redirectUri = 'http://' + hostname + ':' + window.location.port + '/start/popup.html';
+//const redirectUri = 'http://localhost:8000/get_token/get_token.html';
+const scopes = [
+  'streaming',
+  'user-read-email',
+  'user-read-private',
+  'user-read-currently-playing',
+  'user-read-playback-position',
+  'user-read-playback-state',
+];
+
+
+if (!_token) {
+    window.location = (`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=code&show_dialog=true`);
+  }
+
+  }
+</script>
+
+<!-- partial -->
+  
+</body>
+</html>

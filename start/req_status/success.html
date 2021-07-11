@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>success</title>
+  <link rel="stylesheet" href="./success.css">
+
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+
+  <div id="success-box">
+    <div class="dot" onclick="close_window()"></div>
+    <div class="face">
+      <div class="eye"></div>
+      <div class="eye right"></div>
+      <div class="mouth happy"></div>
+    </div>
+    <div class="shadow scale"></div>
+    <div class="message"><h1 class="alert">Success!</h1><p>YaY!, EvErYtHiNg'S PeRfEcT.</p></div>
+    <button class="button-box" onclick="close_window()"><h1 class="green">continue</h1></button>
+
+  
+</div>
+<script type="text/javascript">
+  function close_window() {
+    window.close();
+  }
+
+  setTimeout(function(){ window.close(); }, 4000);
+</script>
+
+<!-- partial -->
+  
+</body>
+</html>

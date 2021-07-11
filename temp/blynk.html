@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-light">
+<head>
+<link rel="shortcut icon" href="RGBicon.png" type="image/png" sizes="128x128">
+<script type="text/javascript"  src="/eel.js"></script>
+  <meta charset="UTF-8">
+  <title>RGBeatz</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<script src="https://kit.fontawesome.com/f0601b0fb2.js" crossorigin="anonymous"></script>
+<script type='module' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js'></script>
+<script nomodule='' src='https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.js'></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" href="./main_pg.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="container">
+  <div class="components">
+    
+    <div class="switch">
+      
+      <div class="switch__1" style="visibility: hidden;">
+        <input id="switch-1" type="checkbox">
+        <label for="switch-1"></label>
+      </div>
+      
+      <div class="switch__2">
+        <input id="switch-2" type="checkbox"  onclick="toggleTheme()">
+        <label for="switch-2"></label>
+      </div>
+    </div>
+   
+   <!--
+    <div class="checkbox">
+      <div class="checkbox__1">
+        <input id="checkbox-1" type="checkbox">
+        <label for="checkbox-1">
+          <i class="material-icons">done</i></label>
+      </div>
+      <div class="checkbox__2">
+        <input id="checkbox-2" type="checkbox" checked>
+        <label for="checkbox-2">
+          <i class="material-icons">done</i></label>
+      </div>
+    </div>
+    
+    <div class="radio">
+      <div class="radio__1">
+        <input id="radio-1" type="radio"  name="radio" value="1">
+        <label for="radio-1"></label>
+      </div>
+      
+      <div class="radio__2">
+        <input id="radio-2" type="radio" name="radio" value="2" checked>
+        <label for="radio-2"></label>
+      </div>
+    </div>
+    
+    <div class="btn btn__primary"><p>Button</p></div>
+    <div class="btn btn__secondary"><p>Button</p></div>
+   
+
+    
+    <div class="chip">
+      <div class="chip__icon">
+        <ion-icon name="color-palette"></ion-icon></div>
+      <p>Neumorphic Design</p>
+      <div class="chip__close">
+        <ion-icon name="close"></ion-icon>
+      </div>
+    </div>
+    
+
+    
+    <div class="form">
+      <input type="text" class="form__input" placeholder="Type anything...">
+    </div>
+    
+    <div class="search">
+      <input type="text" class="search__input" placeholder="Search...">
+      <div class="search__icon">
+        <ion-icon name="search"></ion-icon>
+      </div>
+    </div>
+     -->
+    <div class="segmented-control">
+      
+      <input type="radio" name="radio2" value="3" id="tab-1" checked/>
+      <label for="tab-1" class= "segmented-control__1">
+        <p>Solid</p></label>
+      
+      <input type="radio" name="radio2" value="4" id="tab-2" />
+      <label for="tab-2" class= "segmented-control__2">
+        <p>RGB Life</p></label>
+      
+      <input type="radio" name="radio2" value="5" id="tab-3" />
+      <label for="tab-3" class= "segmented-control__3">
+        <p>Beatz</p></label>
+      
+      <div class="segmented-control__color"></div>
+    </div>
+    
+    <div class="icon">
+      <div class="icon__home">
+        <ion-icon name="home"></ion-icon></div>
+      <div class="icon__account">
+        <ion-icon name="person"></ion-icon></div>
+      <div class="icon__settings">
+        <ion-icon name="settings"></ion-icon></div>
+    </div>
+    
+    <div class="slider" id="slider_b">
+      <div class="slider__box" id="slider__box_b">
+        <span class="slider__btn" id="slider__btn_b"></span>
+        <span class="slider__color" id="slider__color_b"></span>
+        <span class="slider__tooltip" id="slider__tooltip_b">50%</span>
+      </div>
+    </div>
+
+    <div class="slider" id="slider_g">
+      <div class="slider__box" id="slider__box_g">
+        <span class="slider__btn" id="slider__btn_g"></span>
+        <span class="slider__color" id="slider__color_g"></span>
+        <span class="slider__tooltip" id="slider__tooltip_g">50%</span>
+      </div>
+    </div>
+
+    <div class="slider" id="slider_r">
+      <div class="slider__box" id="slider__box_r">
+        <span class="slider__btn" id="slider__btn_r"></span>
+        <span class="slider__color" id="slider__color_r"></span>
+        <span class="slider__tooltip" id="slider__tooltip_r">50%</span>
+      </div>
+    </div>
+
+<script type="text/javascript">
+      var r;
+      var g;
+      var b;
+      var user_data;
+      var blynk_tokens;
+      var default_device;
+      var currently_active_token;
+      var rgb_wait = 0;
+
+
+      eel.user_creds_main_send();
+
+      eel.expose(user_creds_main);
+          function user_creds_main(local_data) {
+            user_data = local_data;
+            blynk_tokens = user_data["blynk_token"];
+            default_device = parseInt(user_data["default_device"]);
+            currently_active_token = blynk_tokens[default_device];
+            console.log(user_data);
+            console.log(currently_active_token);
+            eel.confirmation();
+          }
+
+
+      eel.expose(blynk_update_val);
+          async function blynk_update_val(){
+            
+            r = parseInt(document.getElementById("slider__tooltip_r").textContent);
+            g = parseInt(document.getElementById("slider__tooltip_g").textContent);
+            b = parseInt(document.getElementById("slider__tooltip_b").textContent);
+            jQuery.ajax({
+              url : 'http://blynk-cloud.com/' + currently_active_token + '/update/V0?value=' + ((r/100) * 255).toString(),
+              type: 'GET',
+              success: function() {
+                //.log(r, g, b);
+                
+                 }
+
+               });
+
+              jQuery.ajax({
+              url : 'http://blynk-cloud.com/' + currently_active_token + '/update/V1?value=' + ((g/100) * 255).toString(),
+              type: 'GET',
+              success: function() {
+                //console.log(r, g, b);
+                
+                 }
+
+               });
+
+              jQuery.ajax({
+              url : 'http://blynk-cloud.com/' + currently_active_token + '/update/V2?value=' + ((b/100) * 255).toString(),
+              type: 'GET',
+              success: function() {
+                
+                
+                 }
+
+               });
+              console.log(r, g, b);
+              rgb_wait = 1;
+              setTimeout(function() { rgb_wait = 0; }, (rgb_wait * 100));
+          }
+
+
+
+   // function to set a given theme/color-scheme
+        function setTheme(themeName) {
+            localStorage.setItem('theme', themeName);
+            document.documentElement.className = themeName;
+        }
+
+        // function to toggle between light and dark theme
+        function toggleTheme() {
+            //console.log("kk");
+            if (localStorage.getItem('theme') === 'theme-dark') {
+                setTheme('theme-light');
+            } else {
+                setTheme('theme-dark');
+            }
+        }
+
+        // Immediately invoked function to set the theme on initial load
+        (function () {
+            if (localStorage.getItem('theme') === 'theme-dark') {
+                setTheme('theme-dark');
+                //document.getElementById('slider').checked = false;
+            } else {
+                setTheme('theme-light');
+              //document.getElementById('slider').checked = true;
+            }
+        })();
+</script>
+
+<!-- partial -->
+  <script  src="./main_pg.js"></script>
+
+</body>
+</html>

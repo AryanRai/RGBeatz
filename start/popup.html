@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+
+<script type="text/javascript">
+
+
+var parmas = window.location.search;
+
+
+var code = parmas.includes("code");
+	console.log(parmas);
+
+
+var error = parmas.includes("error");
+	console.log(error);
+	
+
+if (error == true) {
+	console.log("ERRRROOOOOR");
+	window.location = "req_status/error.html";
+
+
+}
+
+if (code == true) {
+	console.log("WUUUHuU");
+	code = window.location.search;
+	console.log(code);
+	opener.returned_spotify_success(code);
+	window.location = "req_status/success.html";
+	
+}
+
+</script>
+</body>
+</html>

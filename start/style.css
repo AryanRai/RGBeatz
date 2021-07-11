@@ -1,0 +1,386 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700");
+body {
+  margin: 0;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #000;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.glassbox {
+  box-sizing: border-box;
+  padding: 15.25% 240px;
+  height: 100%;
+  width: 100%;
+  
+  background: rgba( 255, 255, 255, 0.10 );
+  box-shadow: 0px 10px 50px 0 rgb(31 38 135 / 20%);
+  
+
+  backdrop-filter: blur( 8.0px );
+  -webkit-backdrop-filter: blur( 8.0px );
+  border: 1px solid rgb(255 255 255 / 15%);
+  text-align: center;
+}
+
+
+h1 {
+    font-size: 45px;
+    line-height: 1.2em;
+    color: #272727;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 25px;
+    line-height: 1.5em;
+    color: #F5F5F5;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 20px;
+    line-height: 0.8em;
+    color: #ffffff94;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    letter-spacing: 5px;
+    margin-bottom: -15px;
+}
+
+a, a:visited, a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+.copyrightsleft {
+position: fixed;
+left: 25px;
+bottom: 25px;
+text-align: left;
+font-size: 12px;
+color: #ffffff94;
+      font-family: sans-serif;
+}
+
+.copyrightsright {
+position: fixed;
+right: 40px;
+bottom: 40px;
+}
+
+#spotify_logo{
+  width: 100%;
+
+}
+
+#spotify_btn{
+  max-width: 175px;
+  height: 15%;
+  
+}
+
+:root {
+  --backgroundColor: rgba(246, 241, 209);
+  --colorShadeA: rgb(106, 163, 137);
+  --colorShadeB: rgb(121, 186, 156);
+  --colorShadeC: rgb(150, 232, 195);
+  --colorShadeD: rgb(187, 232, 211);
+  --colorShadeE: rgb(205, 255, 232);
+
+  --colorShadeF: rgb(101, 101, 101);
+  --colorShadeG: rgb(93, 93, 93);
+  --colorShadeH: rgb(128, 128, 128);
+  --colorShadeI: rgb(218, 218, 218);
+  --colorShadeJ: rgb(255, 255, 255);
+
+
+}
+
+
+
+
+
+button {
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  text-align: center;
+  
+}
+
+button.spotify-button {
+   padding: 0.5em 1em;
+   border: 2px solid var(--colorShadeA);
+  border-radius: 1em;
+  background: var(--colorShadeE);
+transform-style: preserve-3d;
+   transition: all 175ms cubic-bezier(0, 0, 1, 1);
+   font-size: 1.5rem;
+    color:var(--colorShadeA);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-family: 'OpenSans', sans-serif;
+}
+
+button.spotify-button::before {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--colorShadeC);
+  border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.4em 0 0 var(--colorShadeA);
+ transform: translate3d(0, 0.4em, -1em);
+     transition: all 175ms cubic-bezier(0, 0, 1, 1);
+}
+
+
+button.spotify-button:hover {
+  background: var(--colorShadeD);
+  transform: translate(0, 0.3em);
+}
+
+button.spotify-button:hover::before {
+  transform: translate3d(0, 0.4em, -1em);
+}
+
+button.spotify-button:active {
+            transform: translate(0em, 0.75em);
+}
+
+button.spotify-button:active::before {
+  transform: translate3d(0, 0, -1em);
+  
+      box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.25em 0 0 var(--colorShadeB);
+
+}
+
+
+
+
+button.google-button {
+   padding: 0.5em 1em;
+   border: 2px solid var(--colorShadeF);
+  border-radius: 1em;
+  background: var(--colorShadeJ);
+transform-style: preserve-3d;
+   transition: all 175ms cubic-bezier(0, 0, 1, 1);
+   font-size: 1.5rem;
+    color:var(--colorShadeF);
+  font-weight: 500;
+  font-family: system-ui,roboto,sans-serif;
+
+}
+
+button.google-button::before {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--colorShadeH);
+  border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--colorShadeG), 0 0.4em 0 0 var(--colorShadeF);
+ transform: translate3d(0, 0.4em, -1em);
+     transition: all 175ms cubic-bezier(0, 0, 1, 1);
+}
+
+
+button.google-button:hover {
+  background: var(--colorShadeI);
+  transform: translate(0, 0.3em);
+}
+
+button.google-button:hover::before {
+  transform: translate3d(0, 0.4em, -1em);
+}
+
+button.google-button:active {
+            transform: translate(0em, 0.75em);
+}
+
+button.google-button:active::before {
+  transform: translate3d(0, 0, -1em);
+  
+      box-shadow: 0 0 0 2px var(--colorShadeG), 0 0.25em 0 0 var(--colorShadeG);
+
+}
+
+
+
+#google_btn{
+  max-width: 200px;
+  height: 16%;
+
+  
+}
+
+
+.google-login {
+  color: #40454a;
+  
+  font-family: system-ui,roboto,sans-serif;
+}
+
+.svg-icon {
+  vertical-align: middle;
+  padding-bottom: 4px;
+  height: 35px;
+  width: 35px;
+  padding-right: 3px;
+}
+
+img{
+	user-drag: none; 
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+#first_time_portal{
+
+}
+
+
+
+button.blynk-button {
+   padding: 0.5em 1em;
+   border: 2px solid var(--colorShadeA);
+  border-radius: 1em;
+  background: var(--colorShadeE);
+  transform-style: preserve-3d;
+   transition: all 175ms cubic-bezier(0, 0, 1, 1);
+   font-size: 1.5rem;
+    color:var(--colorShadeA);
+  font-weight: 500;
+  font-family: system-ui,roboto,sans-serif;
+
+}
+
+button.blynk-button::before {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--colorShadeC);
+  border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.4em 0 0 var(--colorShadeA);
+ transform: translate3d(0, 0.4em, -1em);
+     transition: all 175ms cubic-bezier(0, 0, 1, 1);
+}
+
+
+button.blynk-button:hover {
+  background: var(--colorShadeD);
+  transform: translate(0, 0.3em);
+}
+
+button.blynk-button:hover::before {
+  transform: translate3d(0, 0.4em, -1em);
+}
+
+button.blynk-button:active {
+            transform: translate(0em, 0.75em);
+}
+
+button.blynk-button:active::before {
+  transform: translate3d(0, 0, -1em);
+  
+      box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.25em 0 0 var(--colorShadeB);
+
+}
+
+
+
+
+
+
+button.continue-button {
+   padding: 0.5em 1em;
+   border: 2px solid var(--colorShadeA);
+  border-radius: 1em;
+  background: var(--colorShadeE);
+  transform-style: preserve-3d;
+   transition: all 175ms cubic-bezier(0, 0, 1, 1);
+   font-size: 1.5rem;
+    color:var(--colorShadeA);
+  font-weight: 500;
+  font-family: system-ui,roboto,sans-serif;
+
+}
+
+button.continue-button::before {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--colorShadeC);
+  border-radius: inherit;
+    box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.4em 0 0 var(--colorShadeA);
+ transform: translate3d(0, 0.4em, -1em);
+     transition: all 175ms cubic-bezier(0, 0, 1, 1);
+}
+
+
+button.continue-button:hover {
+  background: var(--colorShadeD);
+  transform: translate(0, 0.3em);
+}
+
+button.continue-button:hover::before {
+  transform: translate3d(0, 0.4em, -1em);
+}
+
+button.continue-button:active {
+            transform: translate(0em, 0.75em);
+}
+
+button.continue-button:active::before {
+  transform: translate3d(0, 0, -1em);
+  
+      box-shadow: 0 0 0 2px var(--colorShadeB), 0 0.25em 0 0 var(--colorShadeB);
+
+}
+
