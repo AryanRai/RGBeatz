@@ -134,12 +134,12 @@ def handle_config_creds():
     key = "B?E(H+Mb8x/A?D(Gr4u7x!A%WmZq4t7weThWmYq3KbPeShVm*G-KaPdSz%C*F-Ja6w9z$C&Fp3s6v9y$"    
     try:
 
-        with open(os.path.join(os.environ['USERPROFILE'], "RGBconf.bin"), 'rb') as file_object:
+        with open(os.path.join(os.environ['USERPROFILE'], "AppData", "Local", "Rgbeatz", "RGBconf.bin"), 'rb') as file_object:
             for line in file_object:
                 key = base64.b64decode(line)
             file_object.close()
             cipher_suite = Fernet(key)
-        with open(os.path.join(sys.path[0], "RGBeatz.bin"), 'rb') as file_object:
+        with open(os.path.join(os.environ['USERPROFILE'], "AppData", "Local", "Rgbeatz", "RGBeatz.bin"), 'rb') as file_object:
             for line in file_object:
                 encrypted_data = line
             file_object.close()
@@ -176,7 +176,14 @@ def handle_config_creds():
         ########################
         print("encrypting")
         key = Fernet.generate_key()
-        with open(os.path.join(os.environ['USERPROFILE'], "RGBconf.bin"), 'wb') as file_object:
+
+        try:
+            os.mkdir(os.path.join(os.environ['USERPROFILE'], "AppData", "Local", "Rgbeatz"))
+
+        except IOError:
+            print("folder there")
+            
+        with open(os.path.join(os.environ['USERPROFILE'], "AppData", "Local", "Rgbeatz", "RGBconf.bin"), 'wb') as file_object:
             file_object.write(base64.b64encode(key))
             file_object.close()
             client_id = base64.b64decode("NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=")
@@ -207,7 +214,7 @@ def encrypt_write(writable_data):
     global key
     cipher_suite = Fernet(key)
     ciphered_text = cipher_suite.encrypt(bytes(writable_data,'utf-8'))
-    with open(os.path.join(sys.path[0], "RGBeatz.bin"), 'wb') as file_object:
+    with open(os.path.join(os.environ['USERPROFILE'], "AppData", "Local", "Rgbeatz", "RGBeatz.bin"), 'wb') as file_object:
         file_object.write(ciphered_text)
         file_object.close()
 
@@ -575,8 +582,6 @@ while True:
     
 
 k=input("press close to exit") 
-
-
 
 
 

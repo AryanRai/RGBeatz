@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-key = 'abcdefghijklmnop'
+key = '0000000potato451'
