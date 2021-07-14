@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
-block_cipher = pyi_crypto.PyiBlockCipher(key='potato451')
+block_cipher = pyi_crypto.PyiBlockCipher(key='abcdefghijklmnop')
 
 
 a = Analysis(['audio_analitycs.py'],

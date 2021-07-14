@@ -6,11 +6,12 @@ document.querySelectorAll('.new_device_button').forEach(button => {
     const bounding = button.getBoundingClientRect()
 
 
+
     function create_new_device() {
 
         blynkbutton.style.visibility = "hidden";
-        description_para.innerHTML = "Why u still here hUh? yeah YoU.. Im talking to you. Go to the other window and Register your device😉";
-        var create_new_device_window = window.open('http://' + hostname + ':' + window.location.port + '/create_new_device/create_new_device.html', "Popup", "Spotify");
+        description_para.innerHTML = "Why u still here hUh? yeah YoU.. Im talking to you. Go to the other window and Register your device😉 !Dont close this window!";
+        create_new_device_window = window.open('http://' + hostname + ':' + window.location.port + '/create_new_device/create_new_device.html', "Popup", "Spotify");
         create_new_device_window.resizeTo(10000, 10000);
         //create_new_device_window.moveTo(400, 50);
         create_new_device_window.focus(); 
@@ -18,6 +19,7 @@ document.querySelectorAll('.new_device_button').forEach(button => {
         
   }
 
+  
 
 
 
@@ -45,6 +47,7 @@ document.querySelectorAll('.new_device_button').forEach(button => {
 
         if(!button.classList.contains('active')) {
 
+            
             button.classList.add('active');
 
             gsap.to(button, {

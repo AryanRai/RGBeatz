@@ -130,7 +130,7 @@
    </div>
  </button>
 
-   <button id="blynk_btn" class="new_device_button" onclick="hidecontinuebtn()" style="visibility: hidden; display: none;">
+   <button id="blynk_btn" class="new_device_button" onclick="hidecontinuebtn(); check_dev_created_once_true();" style="visibility: hidden; display: none;">
     <span class="default">Create Device +</span>
     <span class="success">pls waitsss ...😉</span>
     <div class="left"></div>
@@ -164,6 +164,7 @@
   </div>   
   <script type="text/javascript">
     
+    var create_new_device_window;
     var description_para = document.getElementById('description');
     var spotify_success = false;
     var google_success = false;
@@ -185,6 +186,7 @@
     var redirectUri = 'http://' + hostname + ':' + window.location.port + '/start/popup.html';
     var devices_firebase_token;
     var devices_firebase_token_raw;
+    var dev_created_once = false;
 
     function hidecontinuebtn() {
       continuebutton.style.visibility = "hidden";
@@ -307,6 +309,23 @@ if (!_token) {
        }  
 }
 
+function dev_created_once_true() {
+  dev_created_once = true;
+}
+
+function check_dev_created_once_true() {
+  if(dev_created_once == true){
+    console.log("asdfghjswdfghjdfg");
+    blynkbutton.style.visibility = "hidden";
+    description_para.innerHTML = "Why u still here hUh? yeah YoU.. Im talking to you. Go to the other window and Register your device😉 !Dont close this window!";
+    create_new_device_window = window.open('http://' + hostname + ':' + window.location.port + '/create_new_device/create_new_device.html', "Popup", "Spotify");
+    create_new_device_window.resizeTo(10000, 10000);
+    //create_new_device_window.moveTo(400, 50);
+    create_new_device_window.focus(); 
+
+  }
+}
+
 function check_overall_login() {
   // body...
   
@@ -319,12 +338,15 @@ function check_overall_login() {
     console.log("checking blynk");
 
     const dbRef = firebase.database().ref();
-    dbRef.child("users").child(google_uid).get().then((snapshot) => {
-      if (snapshot.exists()) {     
-        console.log(snapshot.val());
+    
+    dbRef.child("users").child(google_uid).get().then((snaphot) => {
+      if (snaphot.exists()) {     
+        console.log(snaphot.val());
+        //if (snapshot.exists()) {     
+        //console.log(snapshot.val());
 
         dbRef.child("users").child(google_uid).child("devices").get().then((snapcat) => {
-          if (snapcat.exists()) {     
+          if (snapcat.exists() && snapcat.val() != "null") {     
           devices_firebase_token_raw = snapcat.val();
           console.log("devices founddd!");
           console.log(devices_firebase_token_raw);
@@ -339,21 +361,30 @@ function check_overall_login() {
           continuebutton.style.visibility = "visible";
           description_para.innerHTML = "Would u like to continue with your previously registered devices, or setup a new one?";
           }
-        })
-      
-      }
 
-      else {
+          else {
           console.log("No data available");
           description_para.innerHTML = "Please setup a new device. This will be registered with your Google account. Click the button below to start the setup";
           console.log("new accounttt... les goooo");
+          spotifybutton.style.display = "none";
+          googlebutton.style.display = "none";
           blynkbutton.style.display = "inline-block";
           blynkbutton.style.visibility = "visible"; 
-          firebase.database().ref('users/' + google_uid).set({
+
+        }
+
+        })
+      
+      //}
+      }
+      else{
+        dbRef.child("users").child(google_uid).child("devices").set("null");
+        firebase.database().ref('users/' + google_uid).set({
           "email": google_email,
           "displayname": google_display_name,
           "phone-number": google_phone_number,
           "last-spotify-refresh-token": refresh_token,
+          "devices": "null",
           },   
 
 
@@ -364,11 +395,28 @@ function check_overall_login() {
         // Data saved successfully!
             }
           });
-        }
-
+          console.log("No data available");
+          description_para.innerHTML = "Please setup a new device. This will be registered with your Google account. Click the button below to start the setup";
+          console.log("new accounttt... les goooo");
+          spotifybutton.style.display = "none";
+          googlebutton.style.display = "none";
+          blynkbutton.style.display = "inline-block";
+          blynkbutton.style.visibility = "visible";
+      }
       }).catch((error) => {
         console.error(error);
       });
+
+
+    //setTimeout(function(){ alert("Hello"); }, 3000);  
+    //dbRef.child("users").child(google_uid).get().then((snapshot) => {
+
+
+ 
+
+      //}).catch((error) => {
+       // console.error(error);
+      //});
 
     //spotifybutton.style.display = "inline-block";
     //googlebutton.style.display = "inline-block";
@@ -376,6 +424,15 @@ function check_overall_login() {
   } 
 
 }
+
+window.CallParentfunction= function (blynkkey, numbled) {  
+    console.log(blynkkey);
+    console.log(numbled);
+    const dbRef = firebase.database().ref();
+    dbRef.child("users").child(google_uid).child("devices").child(blynkkey).set({"leds":numbled});
+
+    check_overall_login();
+  }  
 
   </script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js'></script>
