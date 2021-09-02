@@ -1,15 +1,15 @@
 //INCLUDE WALA PART
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//#include <FS.h>
 
 #ifdef ESP8266
 
-#include <BlynkSimpleEsp8266.h>
+//#include <BlynkSimpleEsp8266.h>
 #include <ESP8266WiFi.h>
 
 
 #elif defined(ESP32)
-#include <BlynkSimpleEsp32.h>
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
@@ -21,28 +21,82 @@
 #include <Arduino.h>
 //
 
-//ELEGANT WIFI
-//#include <ESPConnect.h>
-#include <EEPROM.h>
-#include <WiFiManager.h>
-#include <ESP8266WebServer.h>
+//WIFI
 #include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
+#include <ArduinoJson.h>
+#include "ESP8266WiFi.h"
+#include "FS.h"
+
+
+//TIME
+
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+
 
 //LED
 #include <Adafruit_NeoPixel.h>
 #include <SPI.h>
 #include "FastLED.h"
 
+#include <Firebase_ESP_Client.h>
 
-WiFiManager wifiManager;
+//Provide the RTDB payload printing info and other helper functions.
+#include "addons/RTDBHelper.h"
+
+ 
+const char *apssid = "RGBeatz";
+const char *appassword = "timepass";
+
+const long utcOffsetInSeconds = 0;
+
+//Week Days
+String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+//Month names
+String months[12]={"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+bool firsttimeconf = false;
+
+StaticJsonDocument<200> localwificonfig;
+StaticJsonDocument<200> sysconf;
+
+ESP8266WebServer server(80);
+
 
 //AsyncWebServer server(80);
+WiFiManager wifiManager;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 
-bool shouldSaveConfig = false;
+#define DATABASE_URL "rgbeatzz-default-rtdb.europe-west1.firebasedatabase.app" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_SECRET "kApQxL7x4kjCtMlYDcBfTggtD0FXHauc7E80oVQI"
 
-const unsigned long CONNECT_TIMEOUT = 10; // Wait 10 Seconds  to connect to the real AP before trying to boot the local AP
-const unsigned long AP_TIMEOUT = 20; // Wait 20 Seconds in the config portal before trying again the original WiFi creds
+/* 3. Define the Firebase Data object */
+FirebaseData Rfbdo;
+FirebaseData Gfbdo;
+FirebaseData Bfbdo;
+FirebaseData lolfbdo;
+//FirebaseData sysconffbdo;
+/* 4, Define the FirebaseAuth data for authentication data */
+FirebaseAuth auth;
+
+/* Define the FirebaseConfig data for config data */
+FirebaseConfig config;
+
+unsigned long sendDataPrevMillis = 0;
+
+int count = 0;
+
+uint32_t idleTimeForStream = 15000;
+
+unsigned long dataMillis = 0;
+
+const char* devuuid;
 
 
 
@@ -51,8 +105,11 @@ const unsigned long AP_TIMEOUT = 20; // Wait 20 Seconds in the config portal bef
 
 int NUMPIXELS = 60;
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel();
+
 int pattern_delay;
+
+
 int R;
 int G;
 int B;
@@ -80,43 +137,436 @@ String RGBeatz_error;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//WIFIMANAGER SETUP
+//VOID SETUP
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void setup(){
 
-void saveConfigCallback () {
-  Serial.println("Should save config");
-  shouldSaveConfig = true;
+  
+  Serial.begin(115200);
+
+  Serial.println();
+
+  
+  checklocalwificreds();
+  
+  const char* wifissid = localwificonfig["wifi"];
+  const char* wifipassword = localwificonfig["password"];
+  const char* usrfirebaseuuid = localwificonfig["firebaseuuid"];
+  
+  WiFi.begin(wifissid, wifipassword);             // Connect to the network
+  Serial.print("Connecting to ");
+  Serial.print(wifissid); Serial.println(" ...");
+
+  int i = 0;
+  while (WiFi.status() != WL_CONNECTED) { // Wait for the Wi-Fi to connect
+    delay(1000);
+    Serial.print(++i); Serial.print(' ');
+  }
+
+  Serial.println('\n');
+  Serial.println("Connection established!");  
+  Serial.print("IP address:\t");
+  Serial.println(WiFi.localIP());   
+   if (WiFi.status() == WL_CONNECTED)
+        {
+
+        
+        // Define NTP Client to get time
+
+        timeClient.begin();
+        
+
+        Serial.printf("Firebase Client v%s\n\n", FIREBASE_CLIENT_VERSION);
+      
+          /* Assign the certificate file (optional) */
+          //config.cert.file = "/cert.cer";
+          //config.cert.file_storage = StorageType::FLASH;
+      
+          /* Assign the database URL and database secret(required) */
+        config.database_url = DATABASE_URL;
+        config.signer.tokens.legacy_token = DATABASE_SECRET;
+      
+          //Firebase.reconnectWiFi(true);
+      
+          /* Initialize the library with the Firebase authen and config */
+        Firebase.begin(&config, &auth);
+
+
+        checksysconf();
+
+        devuuid = sysconf["uuid"];
+        Serial.println(devuuid);
+
+        std::string devicedatapath = std::string("/users/") + usrfirebaseuuid + "/devices/" + devuuid + "/";
+
+        if (firsttimeconf == true) {
+        Serial.println("abc");
+        Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&lolfbdo, (devicedatapath + std::string("data/R")).data(), 0) ? "ok" : lolfbdo.errorReason().c_str());
+        Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&lolfbdo, (devicedatapath + std::string("data/G")).data(), 0) ? "ok" : lolfbdo.errorReason().c_str());
+        Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&lolfbdo, (devicedatapath + std::string("data/B")).data(), 0) ? "ok" : lolfbdo.errorReason().c_str());
+        Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&lolfbdo, (devicedatapath + std::string("data/lol")).data(), 0) ? "ok" : lolfbdo.errorReason().c_str());
+        Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&lolfbdo, (devicedatapath + std::string("leds")).data(), NUMPIXELS) ? "ok" : lolfbdo.errorReason().c_str());
+        }
+
+        delay(1000);
+        Serial.printf("Get int... %s\n", Firebase.RTDB.getInt(&lolfbdo, (devicedatapath + std::string("leds")).data()) ? String(lolfbdo.intData()).c_str() : lolfbdo.errorReason().c_str());
+       
+
+        NUMPIXELS = lolfbdo.intData();
+        Serial.println("number of leds =");
+        Serial.print(NUMPIXELS);
+        pixels.updateType(NEO_GRB + NEO_KHZ800);
+        pixels.updateLength(NUMPIXELS);
+        pixels.setPin(PIN);
+        pixels.begin();  
+        //pinMode(Erasing_button, INPUT);
+
+        
+        if (!Firebase.RTDB.beginStream(&Rfbdo, (devicedatapath + std::string("data/R")).data()))
+        Serial.printf("sream begin error, %s\n\n", Rfbdo.errorReason().c_str());
+
+        Firebase.RTDB.setStreamCallback(&Rfbdo, RstreamCallback, streamTimeoutCallback);
+
+        if (!Firebase.RTDB.beginStream(&Gfbdo, (devicedatapath + std::string("data/G")).data()))
+        Serial.printf("sream begin error, %s\n\n", Gfbdo.errorReason().c_str());
+
+        Firebase.RTDB.setStreamCallback(&Gfbdo, GstreamCallback, streamTimeoutCallback);
+
+        if (!Firebase.RTDB.beginStream(&Bfbdo, (devicedatapath + std::string("data/B")).data()))
+        Serial.printf("sream begin error, %s\n\n", Bfbdo.errorReason().c_str());
+
+        Firebase.RTDB.setStreamCallback(&Bfbdo, BstreamCallback, streamTimeoutCallback);
+        
+        
+        if (!Firebase.RTDB.beginStream(&lolfbdo, (devicedatapath + std::string("data/lol")).data()))
+        Serial.printf("sream begin error, %s\n\n", lolfbdo.errorReason().c_str());
+
+        Firebase.RTDB.setStreamCallback(&lolfbdo, lolstreamCallback, streamTimeoutCallback);
+
+        
+
+        /*
+        
+         //Or use legacy authenticate method
+        //Firebase.begin(DATABASE_URL, DATABASE_SECRET);
+        if (!Firebase.RTDB.beginStream(&Rfbdo, (devicedatapath + std::string("data/R")).data()))
+        Serial.printf("sream begin error, %s\n\n", Rfbdo.errorReason().c_str());
+      
+        if (!Firebase.RTDB.beginStream(&Gfbdo, (devicedatapath + std::string("data/G")).data()))
+        Serial.printf("sream begin error, %s\n\n", Gfbdo.errorReason().c_str());
+      
+        if (!Firebase.RTDB.beginStream(&Bfbdo, (devicedatapath + std::string("data/B")).data()))
+        Serial.printf("sream begin error, %s\n\n", Bfbdo.errorReason().c_str());
+      
+        if (!Firebase.RTDB.beginStream(&lolfbdo, (devicedatapath + std::string("data/lol")).data()))
+        Serial.printf("sream begin error, %s\n\n", lolfbdo.errorReason().c_str());
+        
+        */
+        
+        
+
+
+        lol = 0;
+        for (uint8_t t = 4; t > 0; t--) {
+          Serial.println(t);
+          delay(500);
+        }
+        Serial.println();         
+        startup_animation();
+   
+        }
+
+        else {
+          RESETRGBEATZ();
+        }
+
+     
+
 }
 
-
-#define EEPROM_SALT 12664
-typedef struct
+void RstreamCallback(FirebaseStream data)
 {
-  int   salt = EEPROM_SALT;
-  char blynk_token[33]  = "";
+  Serial.printf("sream path, %s\nevent path, %s\ndata type, %s\nevent type, %s\n\n",
+                data.streamPath().c_str(),
+                data.dataPath().c_str(),
+                data.dataType().c_str(),
+                data.eventType().c_str());
+  printResult(data); //see addons/RTDBHelper.h
+  Serial.println();
+  R = data.intData();
+  Serial.println(R);
 }
 
-WMSettings;
-WMSettings blynk;
-
-void eeprom_read()
+void GstreamCallback(FirebaseStream data)
 {
-  EEPROM.begin(512);
-  EEPROM.get(0, blynk);
-  EEPROM.end();
+  Serial.printf("sream path, %s\nevent path, %s\ndata type, %s\nevent type, %s\n\n",
+                data.streamPath().c_str(),
+                data.dataPath().c_str(),
+                data.dataType().c_str(),
+                data.eventType().c_str());
+  printResult(data); //see addons/RTDBHelper.h
+  Serial.println();
+  G = data.intData();
+  Serial.println(G);
 }
 
-
-void eeprom_saveconfig()
+void BstreamCallback(FirebaseStream data)
 {
-  EEPROM.begin(512);
-  EEPROM.put(0, blynk);
-  EEPROM.commit();
-  EEPROM.end();
+  Serial.printf("sream path, %s\nevent path, %s\ndata type, %s\nevent type, %s\n\n",
+                data.streamPath().c_str(),
+                data.dataPath().c_str(),
+                data.dataType().c_str(),
+                data.eventType().c_str());
+  printResult(data); //see addons/RTDBHelper.h
+  Serial.println();
+  B = data.intData();
+  Serial.println(B);
 }
 
+void lolstreamCallback(FirebaseStream data)
+{
+  Serial.printf("sream path, %s\nevent path, %s\ndata type, %s\nevent type, %s\n\n",
+                data.streamPath().c_str(),
+                data.dataPath().c_str(),
+                data.dataType().c_str(),
+                data.eventType().c_str());
+  printResult(data); //see addons/RTDBHelper.h
+  Serial.println();
+  lol = data.intData();
+  Serial.println(lol);
+}
+
+void streamTimeoutCallback(bool timeout)
+{
+  if (timeout)
+    Serial.println("stream timeout, resuming...\n");
+}
+
+
+void checksysconf() {
+
+  bool result = SPIFFS.begin();
+  Serial.println("SPIFFS opened: " + result);
+ 
+  // this opens the file "myfile.txt" in read-mode
+  File sysconffile = SPIFFS.open("/sysconffile.txt", "r");
+ 
+  if (!sysconffile) 
+  {
+    Serial.println("File doesn't exist yet. Creating it");
+    sysconfwrite();
+    // open the file in write mode
+    
+  } 
+  else 
+  {
+    // we could open the file
+    //int linenumb = 0;
+    
+    while(sysconffile.available()) 
+    {
+      //char *myStrings[] = {};
+      //read line by line from the file
+      String line = sysconffile.readStringUntil('\n');
+      String orgline = line;
+      Serial.println(line);
+      //message = message + "//" + String(linenumb) + "//" + line;
+      line.remove(line.indexOf("= "), line.length() - line.indexOf("= "));
+      orgline.remove(0, (orgline.length() - (orgline.length() - orgline.indexOf("= "))) + 2);
+      orgline.remove(orgline.length() - 1, 1);
+      sysconf[line] = orgline;
+      //myStrings[linenumb] =  line;
+      //linenumb = linenumb + 1;
+      
+    }
+    
+ 
+  }
+  sysconffile.close();
+  
+}
+
+
+
+void sysconfwrite() {
+  
+  while(!timeClient.update()) {
+  timeClient.forceUpdate();
+  }
+
+  randomSeed(analogRead(0));
+  SPIFFS.remove("/sysconf.txt");
+  delay(100);
+  File sysconffile = SPIFFS.open("/sysconffile.txt", "w");
+    if (!sysconffile) 
+    {
+      Serial.println("file creation failed");
+    }
+    //write two lines
+    unsigned long epochTime = timeClient.getEpochTime();
+    struct tm *ptm = gmtime ((time_t *)&epochTime);
+    int monthDay = ptm->tm_mday;
+    int currentMonth = ptm->tm_mon+1;
+    String currentMonthName = months[currentMonth-1];
+    int currentYear = ptm->tm_year+1900;
+    String currentDate = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay);
+    
+    String randomness = String(random(10000, 99999));
+    String creationtimewritable = timeClient.getFormattedTime();
+    String uuidwritable = "--t-" + creationtimewritable + "--d-" + currentDate + "--r-" + randomness;
+    sysconffile.println("creationtime= " + creationtimewritable);
+    sysconffile.println("creationdate= " + currentDate);
+    sysconffile.println("uuid= " + uuidwritable);
+    sysconffile.close();
+    delay(1000);
+    firsttimeconf = true;
+    
+    //devuuid = sysconf["uuid"];
+    //const char* usrfirebaseuuid = localwificonfig["firebaseuuid"];
+    //Serial.println(devuuid);
+    //std::string devicedatapath = std::string("/users/") + usrfirebaseuuid + "/devices/" + devuuid + "/";
+
+
+        
+    delay(1000);
+
+    checksysconf();
+
+}
+
+
+
+void checklocalwificreds() {
+
+  bool result = SPIFFS.begin();
+  Serial.println("SPIFFS opened: " + result);
+ 
+  // this opens the file "myfile.txt" in read-mode
+  File testFile = SPIFFS.open("/wififirebase.txt", "r");
+ 
+  if (!testFile) 
+  {
+    Serial.println("File doesn't exist yet. Creating it");
+    wifisetup();
+    // open the file in write mode
+    
+  } 
+  else 
+  {
+    // we could open the file
+    //int linenumb = 0;
+    
+    while(testFile.available()) 
+    {
+      //char *myStrings[] = {};
+      //read line by line from the file
+      String line = testFile.readStringUntil('\n');
+      String orgline = line;
+      Serial.println(line);
+      //message = message + "//" + String(linenumb) + "//" + line;
+      line.remove(line.indexOf("= "), line.length() - line.indexOf("= "));
+      orgline.remove(0, (orgline.length() - (orgline.length() - orgline.indexOf("= "))) + 2);
+      orgline.remove(orgline.length() - 1, 1);
+      localwificonfig[line] = orgline;
+      //myStrings[linenumb] =  line;
+      //linenumb = linenumb + 1;
+      
+    }
+ 
+  }
+  testFile.close();
+  
+}
+
+
+
+void wifisetup() {
+  
+  WiFi.softAP(apssid, appassword);
+ 
+  Serial.println();
+  Serial.print("Server IP address: ");
+  Serial.println(WiFi.softAPIP());
+  Serial.print("Server MAC address: ");
+  Serial.println(WiFi.softAPmacAddress());
+ 
+  server.on("/", handleRoot);
+  server.on("/wifiset", getwififromportalwrite);
+  server.begin();
+ 
+  Serial.println("Server listening");
+  
+  while (true){
+    server.handleClient();
+   }
+
+}
+
+void handleRoot() {
+
+    DynamicJsonDocument doc(512);
+    JsonArray data = doc.createNestedArray("wifilist");
+    String wifilist = "";
+    
+    int n = WiFi.scanNetworks();
+    Serial.println("Wifi scan ended");
+    if (n == 0) {
+    Serial.println("no networks found");
+    } 
+    else {
+    Serial.print(n);
+    Serial.println(" networks found");
+    for (int i = 0; i < n; ++i) {
+      // Print SSID and RSSI for each network found
+      Serial.print(i + 1);
+      Serial.print(") ");
+      Serial.print(WiFi.SSID(i));// SS
+      data.add(WiFi.SSID(i));
+      delay(10);
+    }
+  }
+  Serial.println("");
+
+  // Wait a bit before scanning again
+      
+  serializeJson(doc, wifilist);
+  server.send(200, "application/json", wifilist);
+}
+
+
+void getwififromportalwrite() {
+  SPIFFS.remove("/wififirebase.txt");
+  delay(100);
+  String ssid = server.arg("ssid");
+  String password = server.arg("password");//this lets you access a query param (http://x.x.x.x/action1?value=1)
+  String firebaseuuid = server.arg("firebaseuuid");//this lets you access a query param (http://x.x.x.x/action1?value=1)
+  Serial.println("recieved wifi");
+  Serial.println(ssid);
+  Serial.println(password);
+  Serial.println(firebaseuuid);
+  if (ssid != "" && password.length() >= 8) {
+  File testFile = SPIFFS.open("/wififirebase.txt", "w");
+    if (!testFile) 
+    {
+      Serial.println("file creation failed");
+    }
+    //write two lines
+    testFile.println("wifi= " + ssid);
+    testFile.println("password= " + password);
+    testFile.println("firebaseuuid= " + firebaseuuid);
+    testFile.close();
+    server.send(200, "text/html", "<h1>Hello from ESP8266 AP!</h1>");
+    delay(5000);
+  
+    ESP.restart();
+  }
+
+  else{
+  server.send(403, "text/html", "<h1>no hello from ESP8266 AP!</h1>");
+  }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,84 +578,24 @@ void eeprom_saveconfig()
 
 void RESETRGBEATZ(){
       
-      
-      Serial.println("my time has come");
-      Serial.println("erasing");
-      Serial.println("BYE :( its all your fault");
-      Serial.println("-WHAT WAS THAT");
-      Serial.println("~DEATH");
-      Serial.println("-WHAT TYPE?");
-      Serial.println("~INSTANT");
-      Serial.println("-b-b-but there was no sound he just died!");
-      Serial.println("bot was not the imposter");
-      delay(100);
-      WiFi.disconnect(true);
-      delay(2000);
-      ESP.reset();
-      delay(2000);
-      ESP.restart();
-      //Credentials.Erase_eeprom();  
-      //Credentials.setupAP(esp_ssid, esp_pass);
-      //Credentials.setupAP(esp_ssid, esp_pass);
+  Serial.println("my time has come");
+  Serial.println("erasing");
+  Serial.println("BYE :( its all your fault");
+  Serial.println("-WHAT WAS THAT");
+  Serial.println("~DEATH");
+  Serial.println("-WHAT TYPE?");
+  Serial.println("~INSTANT");
+  Serial.println("-b-b-but there was mo sound he just died!");
+  Serial.println("bot was not the imposter");
+  delay(100);
+  SPIFFS.remove("/wififirebase.txt");
+  Serial.println("formatted");
+  delay(5000);
+  
+  ESP.restart();
 
       
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//BLYNK FUNCTIONS
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BLYNK_WRITE(V0)
-{
-//Serial.println("blynk_write");  
-
-R =  param.asInt();
-//G = param[1].asInt();
-//B = param[2].asInt();
- 
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-BLYNK_WRITE(V1)
-{
-  G =  param.asInt(); // assigning incoming value from pin V1 to a variable
-
- 
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-BLYNK_WRITE(V2)
-{
-  B =  param.asInt(); // assigning incoming value from pin V2 to a variable
- 
-}
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-BLYNK_WRITE(V3)
-{
-  lol =  param.asInt(); // assigning incoming value from pin V3 to a variable
- 
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-BLYNK_WRITE(V4)
-{
-bot =  param.asInt(); 
-}  
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-//BLYNK_APP_CONNECTED
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-BLYNK_APP_CONNECTED() {
- Serial.println("Blynk App Connected");
- Serial.println("more like RGBeatz connected");
-}
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -593,119 +983,12 @@ void SOLIDBLYNKCOLOR(){
         pixels.setPixelColor(i, pixels.Color(R,G,B));
         pixels.show();
       }
-      delay(50);
+      //delay(50);
 
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//VOID SETUP
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void setup(){
-
-  
-  Serial.begin(115200);
-
-  
-  //read wifi and blynk and connect
-  /****************************************************************/
-
-  eeprom_read();
-  if (blynk.salt != EEPROM_SALT)
-  {
-    Serial.println("Invalid settings in EEPROM, trying with defaults");
-    WMSettings defaults;
-    blynk = defaults;
-  }
-
-  WiFiManagerParameter custom_blynk_token("blynk-token", "Blynk Token", blynk.blynk_token, 33);
-
-  WiFiManager wifiManager;
-  wifiManager.setSaveConfigCallback(saveConfigCallback);
-  wifiManager.addParameter(&custom_blynk_token);
-
-  //reset settings - for testing
-  //wifiManager.resetSettings();
-  //set minimu quality of signal so it ignores AP's under that quality
-  //defaults to 8%
-  wifiManager.setMinimumSignalQuality();
-  //useful to make it all retry or go to sleep
-  //in seconds
-  wifiManager.setConnectTimeout(CONNECT_TIMEOUT);
-  wifiManager.setTimeout(AP_TIMEOUT);
-
-  //and goes into a blocking loop awaiting configuration
-  if (!wifiManager.autoConnect("RGBeatz")) {
-    Serial.println("failed to connect and hit timeout");
-    Serial.println("Reboot Your Device");
-    delay(1000);
-    ESP.restart();
-  }
-
-  //if you get here you have connected to the WiFi
-  Serial.println("connected...yeey :)");
-
-  strcpy(blynk.blynk_token, custom_blynk_token.getValue());
-
-  eeprom_saveconfig();
-
-  //end save
-
-  Serial.println("local ip");
-  Serial.println(WiFi.localIP());
-
-  Blynk.config(blynk.blynk_token);
-  bool result = Blynk.connect();
-
-  if (result != true) {
-    Serial.println("Failed To Connect BLYNK Server");
-  } else {
-    Serial.println("BLYNK Connected");
-    Serial.println(blynk.blynk_token);
-  }
-
-  
-  pixels.begin();
-  //Blynk.config(auth_token);
-  
-  
-  
-  //pinMode(Erasing_button, INPUT);
-  lol = 0;
-
-  for (uint8_t t = 4; t > 0; t--) {
-    Serial.println(t);
-    delay(500);
-  }
-
-  // Press and hold the button to erase all the credentials
-  
-
-  
-
-  
-    // Start serial for debugging (not used by library, just this sketch).
-
-  
-
-  // Connect to WiFi
-  
-  if ((WiFi.status() != WL_CONNECTED)) {
-    Serial.print("... ");
-  }
-  Serial.println();
-
-    /* This is the actual code to check and upgrade */
-   
-  startup_animation();
-   
-              
-      
-
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -716,10 +999,6 @@ void setup(){
 
 void loop()
 {
-   Blynk.run();
-   
-  
-  
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -727,67 +1006,6 @@ void loop()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//RESET RGBEATZ
-/////////////////////////////////////////////////////////////////////////////////////////    
-if (lol == 10000){
-     //RESETRGBEATZ();
-      Serial.println("my time has come");
-      Serial.println("erasing");
-      Serial.println("BYE :( its all your fault");
-      Serial.println("-WHAT WAS THAT");
-      Serial.println("~DEATH");
-      Serial.println("-WHAT TYPE?");
-      Serial.println("~INSTANT");
-      Serial.println("-b-b-but there was mo sound he just died!");
-      Serial.println("bot was not the imposter");
-      delay(100);
-      //Credentials.Erase_eeprom();  
-      WiFi.disconnect(true);
-      delay(2000);
-      ESP.reset();
-      //Credentials.setupAP(esp_ssid, esp_pass);
-      
- }
-
- //////////////////////////////////////////////////////////////////////////////////////////////////
-//RESET FROM HARDWARE
-/////////////////////////////////////////////////////////////////////////////////////////   
-if (Serial.available() > 0) {
-    // read the incoming byte:
-    int incomingByte;
-    
-    incomingByte = Serial.read();
-
-    // say what you got:
-    Serial.print("I received: ");
-    Serial.println(incomingByte, DEC);
-
-    if (incomingByte == 10){
-     //RESETRGBEATZ();
-      Serial.println("my time has come");
-      Serial.println("erasing");
-      Serial.println("BYE :( its all your fault");
-      Serial.println("-WHAT WAS THAT");
-      Serial.println("~DEATH");
-      Serial.println("-WHAT TYPE?");
-      Serial.println("~INSTANT");
-      Serial.println("-b-b-but there was mo sound he just died!");
-      Serial.println("bot was not the imposter");
-      WiFi.disconnect(true);
-
-      
-      delay(2000);
-      ESP.reset();
-      delay(1000);
-      //Credentials.Erase_eeprom();  
-      ESP.restart();
-      ;
-}
-}
-/////////////////////////////////////////////////////////////////////////////////////////////
-//CHANGE TO SOLIDBLYNKCOLOR 
-/////////////////////////////////////////////////////////////////////////////////////////////
 
 if (lol == 0){
 SOLIDBLYNKCOLOR();      
@@ -825,11 +1043,140 @@ if (lol == 30){
  if (lol == 90){
       pattern_delay = 10; // pattern_delay future idea, make pattern_delay controlable using blynk
       RGBFORLIFE(pattern_delay);   
- } 
-   
-} 
+    }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//RESET RGBEATZ
+/////////////////////////////////////////////////////////////////////////////////////////    
+
+  if (lol == 10022){
+  ESP.restart();
+  }
+
+  if (lol == 10032){
+  RESETRGBEATZ();
+  }
+
+  if (lol == 10042){
+  Serial.println("potato");
+  SPIFFS.remove("/sysconffile.txt");
+  Serial.println("formatted");
+  delay(5000);
+  
+  ESP.restart();
+  }
+
+  if (lol == 10052){
+  Serial.println("potato");
+  SPIFFS.remove("/sysconffile.txt");
+  Serial.println("formatted");
+  delay(5000);
+  RESETRGBEATZ();
+  
+  }
+
+ 
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //LOOP END
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  
+
+  
+
+/*
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//RESET RGBEATZ
+/////////////////////////////////////////////////////////////////////////////////////////    
+if (lol == 10000){
+     //RESETRGBEATZ();
+      Serial.println("my time has come");
+      Serial.println("erasing");
+      Serial.println("BYE :( its all your fault");
+      Serial.println("-WHAT WAS THAT");
+      Serial.println("~DEATH");
+      Serial.println("-WHAT TYPE?");
+      Serial.println("~INSTANT");
+      Serial.println("-b-b-but there was mo sound he just died!");
+      Serial.println("bot was not the imposter");
+      delay(100);
+      RESETRGBEATZ();
+      
+ }
+
+ //////////////////////////////////////////////////////////////////////////////////////////////////
+//RESET FROM HARDWARE
+/////////////////////////////////////////////////////////////////////////////////////////   
+
+  if (Serial.parseInt() == 22){
+  ESP.restart();
+  }
+
+  if (Serial.parseInt() == 32){
+  RESETRGBEATZ();
+  }
+
+  if (Serial.parseInt() == 42){
+  Serial.println("potato");
+  SPIFFS.remove("/sysconffile.txt");
+  Serial.println("formatted");
+  delay(5000);
+  
+  ESP.restart();
+  }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//CHANGE TO SOLIDBLYNKCOLOR 
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+  if (Serial.parseInt() == 2){
+    FirebaseJson json;
+    json.add("lol", 70);
+    json.add("num", count);
+    Serial.printf("Set json... %s\n\n", Firebase.RTDB.setJSON(&lolfbdo, "/users/XvHP9fovBiZojhxmKiDID3Fcd5V2/devices/--t-06:21:42--d-3932650-2-23--r-32397/data", &json) ? "ok" : lolfbdo.errorReason().c_str());
+
+  }
+
+
+if (lol == 0){
+SOLIDBLYNKCOLOR();      
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////  
+//CHANGE TO wifimusic
+/////////////////////////////////////////////////////////////////////////////////////////      
+ if (lol == 1023){      
+      wifi_music(); 
+      //Serial.println("music");     
+ }
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+//CHANGE TO RGBBLYNKCOLORFADINGOUTWARD
+//////////////////////////////////////////////////////////////////////////////////////
+if (lol == 30){            
+   RGBBLYNKCOLORFADINGOUTWARD();      
+} 
+
+ 
+/////////////////////////////////////////////////////////////////////////////////////////  
+//CHANGE TO RGBRANDOMCOLORFADINGOUTWARD
+/////////////////////////////////////////////////////////////////////////////////////////      
+ if (lol == 60){
+      RGBRANDOMCOLORFADINGOUTWARD();       
+ }
+
+  
+/////////////////////////////////////////////////////////////////////////////////////////  
+//CHANGE TO RGBFORLIFE
+/////////////////////////////////////////////////////////////////////////////////////////      
+ if (lol == 90){
+      pattern_delay = 10; // pattern_delay future idea, make pattern_delay controlable using blynk
+      RGBFORLIFE(pattern_delay);   
+    } 
+   */
+  
