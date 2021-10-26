@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "587720839130",
+    "firebase_url": "https://rgbeatzz-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "rgbeatzz",
+    "storage_bucket": "rgbeatzz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587720839130:android:22745e746f9e51efa6fae3",
+        "android_client_info": {
+          "package_name": "com.aryanyan.rgbeatz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587720839130-8msgdvo169b2ie569bnr7ibjklcjov76.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aryanyan.rgbeatz",
+            "certificate_hash": "0db776760cba6bbf4482f3ec0b55a652669b4338"
+          }
+        },
+        {
+          "client_id": "587720839130-dhbpqkg9rsa9n8k3jjfa13qe80r9u3ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr2jbUSGruPExC-DhIHdINPivn95gMCWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587720839130-dhbpqkg9rsa9n8k3jjfa13qe80r9u3ns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<script>
+    function datafromformtomain(){
+    if(document.getElementById('blynkkeybox').value.length > 15){
+    opener.CallParentfunction(document.getElementById('blynkkeybox').value, document.getElementById('numbledbox').value);
+    opener.dev_created_once_true();
+    //opener.hidecreatebtn();
+    opener.focus();   
+    window.close();
+        }
+
+    if(document.getElementById('blynkkeybox').value.length < 15){
+        document.getElementById('blynkkeybtnlabel').style = "color: red";
+        document.getElementById('blynkkeybtnlabel').textContent = "required!";
+        
+        //console.log(document.getElementById('blynkkeybox').value.length);
+        alert('Blynk Key Required!');
+        setTimeout(backtonormalblynkform, 3000)
+        
+    }
+    }
+
+    function backtonormalblynkform() {
+        document.getElementById('blynkkeybtnlabel').style = "color: Grey";
+        document.getElementById('blynkkeybtnlabel').textContent = "Blynk Key";
+    }
+
+</script>
+<body>
+<!-- partial:index.partial.html -->
+<div class="login-box">
+  <h2>Blynk ID</h2>
+  <form>
+    <div class="user-box">
+      <input type="text" id="blynkkeybox" required="">
+      <label id="blynkkeybtnlabel">Blynk Key</label>
+    </div>
+    <div class="user-box">
+      <input type="number" id="numbledbox" required="" min="30" value="60" step="30">
+      <label>Number of leds</label>
+    </div>
+    <a id="formbuttonnewdev" onclick="datafromformtomain();">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      LES GO!
+    </a>
+  </form>
+</div>
+<!-- partial -->
+  
+</body>
+</html>

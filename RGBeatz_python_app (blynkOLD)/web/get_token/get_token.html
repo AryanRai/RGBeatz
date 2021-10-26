@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify</title>
+  <link rel="icon" type="image/jpg" href="" id="favicon">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="/eel.js"></script>
+<div class="load">
+  <div class="a2d">
+    <div class="🔴" style="--i: 0"></div>
+    <div class="🔴" style="--i: 1"></div>
+  </div>
+</div>
+</head>
+<body>
+<style type="text/css">
+  
+  @charset "UTF-8";
+@keyframes float {
+  to {
+    transform: translateY(0.75em);
+  }
+}
+@property --k0 {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+@property --k1 {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+@property --ang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@property --x {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: false;
+}
+@property --y {
+  syntax: "<percentage>";
+  initial-value: 0%;
+  inherits: false;
+}
+body, div {
+  display: grid;
+}
+
+body {
+  place-content: center;
+  overflow: hidden;
+  margin: 0;
+  height: 100vh;
+  background: #000;
+  color: #fff;
+  font-size: clamp(1em, 6vw, 2em);
+}
+body::after {
+  padding: 8.5em;
+  background: repeating-conic-gradient(from var(--ang) at var(--x) var(--y), #00fffc, #fc00ff, #fffc00, #00fffc 33.333%);
+  mix-blend-mode: multiply;
+  animation: a 6s infinite;
+  animation-name: ang, x, y;
+  animation-timing-function: linear, cubic-bezier(0.75, 0.25, 0.75, 0.25), cubic-bezier(0.25, 0.75, 0.25, 0.75);
+  content: "";
+}
+
+@keyframes ang {
+  to {
+    --ang: 1turn ;
+  }
+}
+@keyframes x {
+  50% {
+    --x: 100% ;
+  }
+}
+@keyframes y {
+  50% {
+    --y: 100% ;
+  }
+}
+div, ::before, ::after {
+  grid-area: 1/1;
+  place-self: center;
+  border-radius: 50%;
+}
+
+.load {
+  padding: 8.5em;
+  background: inherit;
+}
+
+.a2d {
+  filter: drop-shadow(0 0 0.25em currentcolor) blur(1px);
+  animation: r 3s linear infinite;
+}
+
+@keyframes r {
+  to {
+    transform: rotate(1turn);
+  }
+}
+.🔴 {
+  --not-i: calc(1 - var(--i));
+  --sgn-i: calc(2*var(--i) - 1);
+  --full: linear-gradient(currentcolor, currentcolor);
+  margin-top: calc(var(--sgn-i)*2*2.125em);
+  border: solid 1.25em transparent;
+  padding: 0.25em;
+  width: 2.5em;
+  height: 2.5em;
+  transform: rotate(calc(var(--not-i)*.5turn)) scalex(var(--sgn-i));
+  background: var(--full) content-box, conic-gradient(transparent calc(var(--k0)*100%), currentcolor 0% calc(var(--k1)*100%), transparent 0%) border-box;
+  --mask:
+    var(--full) content-box,
+    var(--full) padding-box,
+    var(--full);
+  -webkit-mask: var(--mask);
+  -webkit-mask-composite: xor;
+  mask: var(--mask);
+  mask-composite: exclude;
+  animation: a 1.5s linear calc(var(--not-i)*-.5*1.5s) infinite;
+  animation-name: k0, k1;
+}
+.🔴::before, .🔴::after {
+  width: 1.25em;
+  height: 1.25em;
+  transform: rotate(calc(var(--k, var(--k0, 0))*1turn)) translatey(-2.125em);
+  opacity: calc(1000*(var(--k1) - var(--k0)));
+  background: currentcolor;
+  content: "";
+}
+.🔴::after {
+  --k: var(--k1, .35) ;
+}
+
+@keyframes k0 {
+  0%, 25% {
+    --k0: 0 ;
+  }
+  50% {
+    --k0: 0.65 ;
+  }
+  75%, 100% {
+    --k0: 1 ;
+  }
+}
+@keyframes k1 {
+  0% {
+    --k1: 0 ;
+  }
+  25% {
+    --k1: 0.35 ;
+  }
+  50%, 100% {
+    --k1: 1 ;
+  }
+}
+
+</style>
+
+<script>
+    
+    var hostname = 'localhost';
+    var params = location.search;
+    console.log(params);
+    var raw_token = params.replace("?code=", "");
+    console.log(raw_token);
+    
+    var returnjson = "";
+    var auth_code = raw_token;
+    var ajaxResult = [];
+    var access_token = "";
+    var refresh_token = "";
+    var client_id = atob("NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=");
+    var client_secret = atob("MmRiNDFmMmVlNDljNDlhZjg0ZDAxOGRjMWI3NDRlMTc=");
+    var redirect_uri = 'http://' + hostname + ':' + window.location.port + '/get_token/get_token.html';
+
+        
+          eel.expose(blynk_tab);
+          function blynk_tab() {
+            
+          window.location.href = 'http://' + hostname + ':' + window.location.port + '/temp/blynk.html';     
+          }
+          
+          eel.expose(req_oauth);
+          function req_oauth() {
+  
+      		console.log("getting access token");
+        		jQuery.ajax({
+			        url : 'https://accounts.spotify.com/api/token',
+			        type: 'POST',
+			        data: {grant_type: "authorization_code", code: auth_code, redirect_uri: redirect_uri, client_id: client_id, client_secret: client_secret},
+			        success: function(data) {
+			          ajaxResult.push(data);
+			          console.log(data);
+			          returnjson = data;
+			          access_token =  returnjson.access_token;
+			          refresh_token = returnjson.refresh_token;
+			          console.log("token",access_token);
+			          console.log("refresh",refresh_token);
+                eel.get_oauth(returnjson, access_token, refresh_token);
+                
+			           }
+
+			         });
+            
+          }
+          
+
+
+
+          
+
+        	/*
+          
+          
+
+        	else {
+        		console.log("refreshing token");
+        		jQuery.ajax({
+			        url : 'https://accounts.spotify.com/api/token',
+			        type: 'POST',
+			        data: {grant_type: "refresh_token", refresh_token: refresh_token, client_id: client_id, client_secret: client_secret},
+			        success: function(data) {
+			          ajaxResult.push(data);
+			          console.log(data);
+			          var returnjson = data;
+			          access_token =  returnjson.access_token;
+			          console.log("new token",access_token);
+			 
+          
+			        }
+
+			      });
+
+        	}
+
+        	
+      */
+      
+  
+  eel.get_token_pg_confirmation()
+  
+  </script>
+   
+  
+</body>
+</html>

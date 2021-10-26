@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="./style.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inter:400,500,600,700&amp;display=swap'><link rel="stylesheet" href="buttons/continue_btn.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Inter:400,500,600,700&amp;display=swap'><link rel="stylesheet" href="buttons/create_new_btn.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <title>RGBeatz</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript">
+      eel.expose(login_portal);
+          function login_portal() {
+            var container = document.getElementById('container');
+            var first_time_portal = document.getElementById('first_time_portal');
+            first_time_portal.style.visibility = "visible";
+            container.style.backgroundImage = "url('https://github.com/AryanRai/RGBeatz/blob/main/RGBeatz_python_app/web/images/bg.jpg?raw=true')";
+
+          }  
+
+    </script>
+    <!-- Include our Javascript -->
+    <script type="text/javascript">
+      
+      var hostname = 'localhost';
+
+      eel.expose(redirect_for_token);
+          function redirect_for_token() {
+          // Get the hash of the url
+            var hostname = 'localhost';
+            const hash = window.location.hash
+            .substring(1)
+            .split('&')
+            .reduce(function (initial, item) {
+              if (item) {
+                var parts = item.split('=');
+                initial[parts[0]] = decodeURIComponent(parts[1]);
+              }
+              return initial;
+            }, {});
+            window.location.hash = '';
+
+            // Set token
+            let _token = hash.access_token;
+              
+            const authEndpoint = 'https://accounts.spotify.com/authorize';
+
+            const clientId = atob('NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=');
+            const redirectUri = 'http://' + hostname + ':' + window.location.port + '/get_token/get_token.html';
+            //const redirectUri = 'http://localhost:8000/get_token/get_token.html';
+            const scopes = [
+              'streaming',
+              'user-read-email',
+              'user-read-private',
+              'user-read-currently-playing',
+              'user-read-playback-position',
+              'user-read-playback-state',
+            ];
+
+
+            if (!_token) {
+              window.location = `${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=code&show_dialog=false`;
+            }
+
+
+            // Set up the Web Playback SDK
+
+      
+    }
+    </script>
+  </head>
+  
+  <body class="container" id="container" style="background-image: none;">
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+
+  <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
+
+  <script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyB3WLCyl1UP-6NMrkpDPgKsQSbZEhVzbdw",
+      authDomain: "rgbeatzz.firebaseapp.com",
+      projectId: "rgbeatzz",
+      storageBucket: "rgbeatzz.appspot.com",
+      messagingSenderId: "587720839130",
+      appId: "1:587720839130:web:cd5d1c1f3289ede5a6fae3",
+      measurementId: "G-G9QXFZ6MG0",
+      databaseURL: "https://rgbeatzz-default-rtdb.europe-west1.firebasedatabase.app/",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    var database = firebase.database();
+
+    </script>
+  
+  <div id="first_time_portal" style="visibility: hidden;">
+  <div class="glassbox">
+    <h3>LOGIN TO</h3>
+<h1>RGBeatz</h1>
+    <h2 id="description">With a valid Google and Spotify account
+    to continue your RGB journey</h2><br />
+    <div>
+    <button id="spotify_btn" class="spotify-button" onclick="first_time_spotify()"><img id="spotify_logo" src="Spotify_Logo_RGB_Black.png"></button>
+    <button id="google_btn" class="google-button" onclick="first_time_google()"><div class="auth-provider google-login">
+      <svg aria-hidden="true" class="svg-icon" width="18" height="18" viewBox="0 0 18 18">
+         <g>
+            <path d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z" fill="#4285F4"></path>
+            <path d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z" fill="#34A853"></path>
+            <path d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z" fill="#FBBC05"></path>
+            <path d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z" fill="#EA4335"></path>
+         </g>
+      </svg>
+      Google
+   </div>
+ </button>
+
+   <button id="blynk_btn" class="new_device_button" onclick="hidecontinuebtn(); check_dev_created_once_true();" style="visibility: hidden; display: none;">
+    <span class="default">Create Device +</span>
+    <span class="success">pls waitsss ...😉</span>
+    <div class="left"></div>
+    <div class="right"></div>
+   </button>
+   
+   <button id="continue_btn" class="continue_button" onclick="hidecreatebtn()" style="visibility: hidden; display: none;">
+    <div class="icon">
+        <div class="cannon"></div>
+        <div class="confetti">
+            <svg viewBox="0 0 18 16">
+                <polyline points="1 10 4 7 4 5 6 1" />
+                <path d="M4,13 C5.33333333,9 7,7 9,7 C11,7 12.3340042,6 13.0020125,4" />
+                <path d="M6,15 C7.83362334,13.6666667 9.83362334,12.6666667 12,12 C14.1663767,11.3333333 15.8330433,9.66666667 17,7" />
+            </svg>
+            <i></i><i></i><i></i><i></i><i></i><i></i>
+            <div class="emitter"></div>
+        </div>
+    </div>
+    <span>Continue?</span>
+</button>
+    </div>
+  </div>
+    
+    <!-- BOTTOM BAR -->
+<div class="copyrightsleft">Made with 🧡 by <a href="https://github.com/AryanRai" target="_blank" rel="noopener noreferrer" onclick="aryan_github()">Aryan</a></div>
+    
+<div class="copyrightsright">
+    
+    </div>
+  </div>   
+  <script type="text/javascript">
+    
+    var create_new_device_window;
+    var description_para = document.getElementById('description');
+    var spotify_success = false;
+    var google_success = false;
+    var google_uid;
+    var google_email;
+    var google_display_name;
+    var google_phone_number;
+    var spotify_code;
+    var spotifybutton = document.getElementById('spotify_btn');
+    var googlebutton = document.getElementById('google_btn');
+    var blynkbutton = document.getElementById('blynk_btn');
+    var continuebutton = document.getElementById('continue_btn');
+    var returnjson = "";
+    var access_token = "";
+    var refresh_token = "";
+    var ajaxResult = [];
+    var clientId = atob('NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=');
+    var client_secret = atob("MmRiNDFmMmVlNDljNDlhZjg0ZDAxOGRjMWI3NDRlMTc=");
+    var redirectUri = 'http://' + hostname + ':' + window.location.port + '/start/popup.html';
+    var devices_firebase_token;
+    var devices_firebase_token_raw;
+    var dev_created_once = false;
+
+    function hidecontinuebtn() {
+      continuebutton.style.visibility = "hidden";
+      continuebutton.style.display = "none";
+    }
+
+    function hidecreatebtn() {
+      blynkbutton.style.visibility = "hidden";
+      blynkbutton.style.display = "none";
+    }
+
+    function first_time_google() {
+      
+
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+       // This gives you a Google Access Token.
+       var token = result.credential.accessToken;
+       // The signed-in user info.
+       var user = result.user;
+       firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in. google
+          console.log("signed in google")
+          googlebutton.style.visibility = "hidden";
+          googlebutton.style.display = "none";
+          google_uid = user.uid;
+          google_email = user.email;
+          google_display_name = user.displayName;
+          google_phone_number = user.phoneNumber;
+          console.log(google_uid);
+          console.log(google_display_name);
+          console.log(google_phone_number);
+          
+          google_success = true;
+          check_overall_login();
+
+  }
+});
+
+      });
+
+    }
+
+
+    function first_time_spotify() {
+
+      
+const hash = window.location.hash
+.substring(1)
+.split('&')
+.reduce(function (initial, item) {
+  if (item) {
+    var parts = item.split('=');
+    initial[parts[0]] = decodeURIComponent(parts[1]);
+  }
+  return initial;
+}, {});
+window.location.hash = '';
+
+// Set token
+let _token = hash.access_token;
+  
+const authEndpoint = 'https://accounts.spotify.com/authorize';
+//const redirectUri = 'http://localhost:8000/get_token/get_token.html';
+const scopes = [
+  'streaming',
+  'user-read-email',
+  'user-read-private',
+  'user-read-currently-playing',
+  'user-read-playback-position',
+  'user-read-playback-state',
+];
+
+
+if (!_token) {
+  popup = window.open(`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join('%20')}&response_type=code&show_dialog=true`, "Popup", "Spotify");
+  }
+
+  popup.resizeTo(550, 650);
+  popup.moveTo(400, 50);
+  popup.focus(); 
+
+  window.returned_spotify_success= function (code) {  
+         spotify_code = code;
+         console.log(spotify_code);
+         spotifybutton.style.visibility = "hidden";
+         spotifybutton.style.display = "none";
+         spotify_success = true;
+         
+         var raw_token = spotify_code.replace("?code=", "");
+         console.log(raw_token);
+         var auth_code = raw_token; 
+         
+           
+          console.log("getting access token");
+            
+            jQuery.ajax({
+              url : 'https://accounts.spotify.com/api/token',
+              type: 'POST',
+              data: {grant_type: "authorization_code", code: auth_code, redirect_uri: redirectUri, client_id: clientId, client_secret: client_secret},
+              success: function(data) {
+                ajaxResult.push(data);
+                console.log(data);
+                returnjson = data;
+                access_token =  returnjson.access_token;
+                refresh_token = returnjson.refresh_token;
+                console.log("token",access_token);
+                console.log("refresh",refresh_token);
+                
+                 }
+
+               });
+
+
+         check_overall_login();
+
+       }  
+}
+
+function dev_created_once_true() {
+  dev_created_once = true;
+}
+
+function check_dev_created_once_true() {
+  if(dev_created_once == true){
+    console.log("asdfghjswdfghjdfg");
+    blynkbutton.style.visibility = "hidden";
+    description_para.innerHTML = "Why u still here hUh? yeah YoU.. Im talking to you. Go to the other window and Register your device😉 !Dont close this window!";
+    create_new_device_window = window.open('http://' + hostname + ':' + window.location.port + '/create_new_device/create_new_device.html', "Popup", "Spotify");
+    create_new_device_window.resizeTo(10000, 10000);
+    //create_new_device_window.moveTo(400, 50);
+    create_new_device_window.focus(); 
+
+  }
+}
+
+function check_overall_login() {
+  // body...
+  
+
+  if (google_success == true && spotify_success == true) {
+
+    spotifybutton.style.display = "inline-block";
+    googlebutton.style.display = "inline-block";
+    console.log("succssss");
+    console.log("checking blynk");
+
+    const dbRef = firebase.database().ref();
+    
+    dbRef.child("users").child(google_uid).get().then((snaphot) => {
+      if (snaphot.exists()) {     
+        console.log(snaphot.val());
+        //if (snapshot.exists()) {     
+        //console.log(snapshot.val());
+
+        dbRef.child("users").child(google_uid).child("devices").get().then((snapcat) => {
+          if (snapcat.exists() && snapcat.val() != "null") {     
+          devices_firebase_token_raw = snapcat.val();
+          console.log("devices founddd!");
+          console.log(devices_firebase_token_raw);
+          devices_firebase_token = Object.keys(devices_firebase_token_raw);
+          console.log(devices_firebase_token);
+          spotifybutton.style.display = "none";
+          googlebutton.style.display = "none";
+          blynkbutton.style.display = "inline-block";
+          blynkbutton.style.visibility = "visible";
+
+          continuebutton.style.display = "inline-block";
+          continuebutton.style.visibility = "visible";
+          description_para.innerHTML = "Would u like to continue with your previously registered devices, or setup a new one?";
+          }
+
+          else {
+          console.log("No data available");
+          description_para.innerHTML = "Please setup a new device. This will be registered with your Google account. Click the button below to start the setup";
+          console.log("new accounttt... les goooo");
+          spotifybutton.style.display = "none";
+          googlebutton.style.display = "none";
+          blynkbutton.style.display = "inline-block";
+          blynkbutton.style.visibility = "visible"; 
+
+        }
+
+        })
+      
+      //}
+      }
+      else{
+        dbRef.child("users").child(google_uid).child("devices").set("null");
+        firebase.database().ref('users/' + google_uid).set({
+          "email": google_email,
+          "displayname": google_display_name,
+          "phone-number": google_phone_number,
+          "last-spotify-refresh-token": refresh_token,
+          "devices": "null",
+          },   
+
+
+          (error) => {
+              if (error) {
+                // The write failed...
+              } else {
+        // Data saved successfully!
+            }
+          });
+          console.log("No data available");
+          description_para.innerHTML = "Please setup a new device. This will be registered with your Google account. Click the button below to start the setup";
+          console.log("new accounttt... les goooo");
+          spotifybutton.style.display = "none";
+          googlebutton.style.display = "none";
+          blynkbutton.style.display = "inline-block";
+          blynkbutton.style.visibility = "visible";
+      }
+      }).catch((error) => {
+        console.error(error);
+      });
+
+
+    //setTimeout(function(){ alert("Hello"); }, 3000);  
+    //dbRef.child("users").child(google_uid).get().then((snapshot) => {
+
+
+ 
+
+      //}).catch((error) => {
+       // console.error(error);
+      //});
+
+    //spotifybutton.style.display = "inline-block";
+    //googlebutton.style.display = "inline-block";
+
+  } 
+
+}
+
+window.CallParentfunction= function (blynkkey, numbled) {  
+    console.log(blynkkey);
+    console.log(numbled);
+    const dbRef = firebase.database().ref();
+    dbRef.child("users").child(google_uid).child("devices").child(blynkkey).set({"leds":numbled});
+
+    check_overall_login();
+  }  
+
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js'></script>
+  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/Physics2DPlugin3.min.js'></script>
+  <script  src="buttons/continue_btn.js"></script>
+  <script  src="buttons/create_new_btn.js"></script>
+  </body>
+  
+</html>

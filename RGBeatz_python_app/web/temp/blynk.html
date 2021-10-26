@@ -18,6 +18,70 @@
 
 </head>
 <body>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+
+  <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
+
+  <script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyB3WLCyl1UP-6NMrkpDPgKsQSbZEhVzbdw",
+      authDomain: "rgbeatzz.firebaseapp.com",
+      projectId: "rgbeatzz",
+      storageBucket: "rgbeatzz.appspot.com",
+      messagingSenderId: "587720839130",
+      appId: "1:587720839130:web:cd5d1c1f3289ede5a6fae3",
+      measurementId: "G-G9QXFZ6MG0",
+      databaseURL: "https://rgbeatzz-default-rtdb.europe-west1.firebasedatabase.app/",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    firebase.analytics();
+    var database = firebase.database();
+    
+  
+    var google_success = false;
+    var google_uid;
+    var google_email;
+    var google_display_name;
+    var google_phone_number;
+    var returnjson = "";
+    var access_token = "";
+    var refresh_token = "";
+    var clientId = atob('NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=');
+    var client_secret = atob("MmRiNDFmMmVlNDljNDlhZjg0ZDAxOGRjMWI3NDRlMTc=");
+    var devices_firebase_token;
+    var devices_firebase_token_raw;
+    var user;
+
+       firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in. google
+          console.log("signed in google")
+          google_uid = user.uid;
+          google_email = user.email;
+          google_display_name = user.displayName;
+          google_phone_number = user.phoneNumber;
+          console.log(google_uid);
+          console.log(google_display_name);
+          console.log(google_email);
+          console.log(google_phone_number);
+          
+          google_success = true;
+          
+
+        }
+      });
+   
+  </script>
 <!-- partial:index.partial.html -->
 <div class="container">
   <div class="components">
@@ -138,6 +202,62 @@
       </div>
     </div>
 
+<script>
+
+ 
+    var spotify_success = false;
+    var google_success = false;
+    var google_uid;
+    var google_email;
+    var google_display_name;
+    var google_phone_number;
+    var spotify_code;
+    var returnjson = "";
+    var access_token = "";
+    var refresh_token = "";
+    var ajaxResult = [];
+    var clientId = atob('NGMzOGE1MzQ1MzliNDUxMGI4YmRjNzliNGVjODZmMDA=');
+    var client_secret = atob("MmRiNDFmMmVlNDljNDlhZjg0ZDAxOGRjMWI3NDRlMTc=");
+    var devices_firebase_token;
+    var devices_firebase_token_raw;
+
+
+      function google_login() {
+      
+
+      var provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope('profile');
+      provider.addScope('email');
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+       // This gives you a Google Access Token.
+       var token = result.credential.accessToken;
+       // The signed-in user info.
+       var user = result.user;
+       firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in. google
+          console.log("signed in google")
+          google_uid = user.uid;
+          google_email = user.email;
+          google_display_name = user.displayName;
+          google_phone_number = user.phoneNumber;
+          console.log(google_uid);
+          console.log(google_display_name);
+          console.log(google_phone_number);
+          
+          google_success = true;
+          
+
+        }
+      });
+
+    });
+
+    }
+
+</script>
+
+
 <script type="text/javascript">
       var r;
       var g;
@@ -231,6 +351,7 @@
               //document.getElementById('slider').checked = true;
             }
         })();
+
 </script>
 
 <!-- partial -->
