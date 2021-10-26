@@ -73,8 +73,8 @@ WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 
-#define DATABASE_URL "rgbeatzz-default-rtdb.europe-west1.firebasedatabase.app" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
-#define DATABASE_SECRET "kApQxL7x4kjCtMlYDcBfTggtD0FXHauc7E80oVQI"
+#define DATABASE_URL "a" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_SECRET "s"
 
 /* 3. Define the Firebase Data object */
 FirebaseData Rfbdo;
