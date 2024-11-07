@@ -228,6 +228,9 @@ RGBeatz includes checks to ensure stable operation:
 1. `wififirebase.txt`: Stores WiFi and Firebase credentials.
 2. `sysconffile.txt`: Holds system configurations and device-specific UUID.
 
+## This is the only one i could find with the wireless spotify feature
+[Demo Video](https://photos.app.goo.gl/8fuFYafpDiCUUYAq7)
+
 ## App Images
 
 # RGBeatz_app
