@@ -57,16 +57,6 @@ RGBeatz is an open-source project that enables remote control of addressable RGB
 ## Support and Contributions
 RGBeatz is an evolving project, and community contributions are welcome. For issues, suggestions, or feature requests, please visit the [GitHub repository](https://github.com/AryanRai/RGBeatz_app) and submit a pull request or an issue.
 
---- 
-
-----------
-
-
-
-Here's a polished version of the **RGBeatz Arduino Documentation**:
-
----
-
 --------
 
 ## Table of Contents
